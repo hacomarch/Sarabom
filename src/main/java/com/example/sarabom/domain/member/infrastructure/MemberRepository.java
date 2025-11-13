@@ -1,6 +1,7 @@
 package com.example.sarabom.domain.member.infrastructure;
 
 import com.example.sarabom.domain.member.domain.Member;
+import com.example.sarabom.domain.member.domain.MemberStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,5 +12,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     boolean existsByPhoneNumber(String phoneNumber);
 
-    Optional<Member> findByPhoneNumber(String phoneNumber);
+    boolean existsByPhoneNumberAndStatus(String phoneNumber, MemberStatus status);
+
+    Optional<Member> findByPhoneNumberAndStatus(String phoneNumber, MemberStatus status);
 }

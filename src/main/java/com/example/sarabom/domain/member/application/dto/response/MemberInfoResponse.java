@@ -1,0 +1,39 @@
+package com.example.sarabom.domain.member.application.dto.response;
+
+import com.example.sarabom.domain.member.domain.Member;
+import com.example.sarabom.domain.member.domain.MemberStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Builder
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
+public class MemberInfoResponse {
+    private Long memberId;
+    private String username;
+    private String phoneNumber;
+    private String nickname;
+    private String address;
+    private String status;
+
+    public static MemberInfoResponse of(
+            Long memberId,
+            String username,
+            String phoneNumber,
+            String nickname,
+            String address,
+            MemberStatus status
+    ) {
+        return MemberInfoResponse.builder()
+                .memberId(memberId)
+                .username(username)
+                .phoneNumber(phoneNumber)
+                .nickname(nickname)
+                .address(address)
+                .status(status.getText())
+                .build();
+    }
+}

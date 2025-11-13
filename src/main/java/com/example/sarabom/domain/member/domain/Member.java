@@ -1,10 +1,7 @@
 package com.example.sarabom.domain.member.domain;
 
 import com.example.sarabom.global.common.BaseEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
@@ -22,14 +19,21 @@ public class Member extends BaseEntity {
     private String password;
     private String nickname;
     private String address;
+    @Enumerated(EnumType.STRING)
+    private MemberStatus status;
 
-    public static Member of(String username, String phoneNumber, String password, String nickname, String address) {
+    public static Member of(String username, String phoneNumber, String encodedPassword, String nickname, String address) {
         return Member.builder()
                 .username(username)
                 .phoneNumber(phoneNumber)
-                .password(password)
+                .password(encodedPassword)
                 .nickname(nickname)
                 .address(address)
+                .status(MemberStatus.ACTIVE)
                 .build();
+    }
+
+    public void withdraw() {
+        this.status = MemberStatus.WITHDRAWN;
     }
 }
