@@ -53,7 +53,7 @@ public class MemberController {
     @PatchMapping("/{memberId}/password")
     public ApiResponse<Void> changePassword(
             @Parameter(description = "회원 ID", required = true) @PathVariable Long memberId,
-            @Parameter(description = "암호화된 새 비밀번호", required = true) @RequestParam String encodedNewPassword) {
-        return memberService.updatePassword(memberId, encodedNewPassword);
+            @Parameter(description = "새 비밀번호", required = true) @RequestParam String newPassword) {
+        return memberService.updatePassword(memberId, newPassword);
     }
 }
