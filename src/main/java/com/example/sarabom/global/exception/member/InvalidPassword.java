@@ -1,5 +1,6 @@
 package com.example.sarabom.global.exception.member;
 
+import com.example.sarabom.global.common.ErrorCode;
 import com.example.sarabom.global.exception.BusinessException;
 import org.springframework.http.HttpStatus;
 
@@ -10,7 +11,7 @@ public class InvalidPassword extends BusinessException {
         super(INVALID_PASSWORD, HttpStatus.BAD_REQUEST);
     }
 
-    public InvalidPassword(String message) {
-        super(INVALID_PASSWORD, message, HttpStatus.BAD_REQUEST);
+    public InvalidPassword(ErrorCode errorCode) {
+        super(errorCode, HttpStatus.BAD_REQUEST);
     }
 }

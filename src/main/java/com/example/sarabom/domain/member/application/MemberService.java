@@ -1,9 +1,11 @@
 package com.example.sarabom.domain.member.application;
 
 import com.example.sarabom.domain.member.application.dto.request.SignUpRequest;
+import com.example.sarabom.domain.member.application.dto.request.UpdateMemberInfoRequest;
 import com.example.sarabom.domain.member.application.dto.response.MemberInfoResponse;
 import com.example.sarabom.domain.member.application.dto.response.SignUpResponse;
 import com.example.sarabom.domain.member.domain.Member;
+import com.example.sarabom.domain.member.domain.Password;
 import com.example.sarabom.domain.member.infrastructure.MemberRepository;
 import com.example.sarabom.global.common.ApiResponse;
 import com.example.sarabom.global.exception.member.DuplicatePhoneNumberException;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import static com.example.sarabom.domain.member.domain.MemberStatus.ACTIVE;
-import static com.example.sarabom.global.common.SuccessCode.SUCCESS_WITHDRAWAL;
+import static com.example.sarabom.global.common.SuccessCode.*;
 
 @Service
 @RequiredArgsConstructor
@@ -34,8 +36,11 @@ public class MemberService {
             throw new DuplicatePhoneNumberException();
         }
 
-        // 비밀번호 인코딩 후 테이블에 저장
-        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        // 비밀번호 검증 및 인코딩 후 테이블에 저장
+        Password rawPassword = Password.of(request.getPassword());  // 검증
+        String encoded = passwordEncoder.encode(rawPassword.getValue());  // 인코딩
+        Password encodedPassword = Password.ofEncoded(encoded);  // Password 객체 생성
+
         Member newMember = Member.of(
                 request.getUsername(),
                 request.getPhoneNumber(),
@@ -84,16 +89,36 @@ public class MemberService {
         );
 
         return ApiResponse.success(data);
-
     }
 
     /**
      * 회원 정보 수정
      */
+    @Transactional
+    public ApiResponse<Void> updateMemberInfo(Long memberId, UpdateMemberInfoRequest request) {
+        Member member = findById(memberId);
+
+        member.update(request.getUsername(), request.getPhoneNumber(), request.getNickname(), request.getAddress());
+
+        return ApiResponse.success(SUCCESS_UPDATE_MEMBER_INFO);
+    }
 
     /**
      * 비밀번호 변경
      */
+    @Transactional
+    public ApiResponse<Void> updatePassword(Long memberId, String newPassword) {
+        Member member = findById(memberId);
+
+        // 비밀번호 검증 및 인코딩
+        Password rawPassword = Password.of(newPassword);  // 검증
+        String encoded = passwordEncoder.encode(rawPassword.getValue());  // 인코딩
+        Password encodedPassword = Password.ofEncoded(encoded);  // Password 객체 생성
+
+        member.updatePassword(encodedPassword);
+
+        return ApiResponse.success(SUCCESS_CHANGE_PASSWORD);
+    }
 
     // findById
     private Member findById(Long memberId) {

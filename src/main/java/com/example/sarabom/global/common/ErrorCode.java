@@ -13,7 +13,9 @@ public enum ErrorCode {
     // 회원 (E1xx)
     MEMBER_NOT_FOUND("E100", "회원을 찾을 수 없습니다"),
     DUPLICATE_PHONE_NUMBER("E101", "이미 가입된 전화번호입니다"),
-    INVALID_PASSWORD("E102", "비밀번호가 일치하지 않습니다")
+    NOT_CORRECT_PASSWORD("E102", "비밀번호가 일치하지 않습니다"),
+    NULL_EMPTY_PASSWORD("E103", "비밀번호는 필수입니다"),
+    INVALID_PASSWORD("E104", "비밀번호는 8-20자, 영문, 숫자, 특수문자를 포함해야 합니다.")
     ;
 
     private final String code;
