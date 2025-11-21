@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "회원 관리", description = "회원 CRUD API")
@@ -27,33 +28,35 @@ public class MemberController {
         return memberService.signUp(request);
     }
 
-    @Operation(summary = "회원 탈퇴", description = "회원을 탈퇴 처리합니다. (Soft Delete)")
-    @DeleteMapping("/{memberId}/withdrawal")
-    public ApiResponse<Void> withdrawal(
-            @Parameter(description = "회원 ID", required = true) @PathVariable Long memberId) {
-        return memberService.withdrawal(memberId);
-    }
-
-    @Operation(summary = "회원 정보 조회", description = "회원의 상세 정보를 조회합니다.")
-    @GetMapping("/{memberId}")
-    public ApiResponse<MemberInfoResponse> getInfo(
-            @Parameter(description = "회원 ID", required = true) @PathVariable Long memberId) {
+    @Operation(summary = "회원 정보 조회", description = "내 정보를 조회합니다.")
+    @GetMapping
+    public ApiResponse<MemberInfoResponse> getInfo(Authentication authentication) {
+        Long memberId = (Long) authentication.getPrincipal();
         return memberService.getMemberInfo(memberId);
     }
 
-    @Operation(summary = "회원 정보 수정", description = "회원의 정보를 수정합니다.")
-    @PatchMapping("/{memberId}")
+    @Operation(summary = "회원 정보 수정", description = "내 정보를 수정합니다.")
+    @PatchMapping
     public ApiResponse<Void> updateInfo(
-            @Parameter(description = "회원 ID", required = true) @PathVariable Long memberId,
+            Authentication authentication,
             @Valid @RequestBody UpdateMemberInfoRequest request) {
+        Long memberId = (Long) authentication.getPrincipal();
         return memberService.updateMemberInfo(memberId, request);
     }
 
-    @Operation(summary = "비밀번호 변경", description = "회원의 비밀번호를 변경합니다.")
-    @PatchMapping("/{memberId}/password")
+    @Operation(summary = "비밀번호 변경", description = "내 비밀번호를 변경합니다.")
+    @PatchMapping("/password")
     public ApiResponse<Void> changePassword(
-            @Parameter(description = "회원 ID", required = true) @PathVariable Long memberId,
+            Authentication authentication,
             @Parameter(description = "새 비밀번호", required = true) @RequestParam String newPassword) {
+        Long memberId = (Long) authentication.getPrincipal();
         return memberService.updatePassword(memberId, newPassword);
+    }
+
+    @Operation(summary = "회원 탈퇴", description = "회원을 탈퇴 처리합니다. (Soft Delete)")
+    @DeleteMapping
+    public ApiResponse<Void> withdrawal(Authentication authentication) {
+        Long memberId = (Long) authentication.getPrincipal();
+        return memberService.withdrawal(memberId);
     }
 }

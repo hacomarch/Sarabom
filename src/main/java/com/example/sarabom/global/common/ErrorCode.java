@@ -15,7 +15,12 @@ public enum ErrorCode {
     DUPLICATE_PHONE_NUMBER("E101", "이미 가입된 전화번호입니다"),
     NOT_CORRECT_PASSWORD("E102", "비밀번호가 일치하지 않습니다"),
     NULL_EMPTY_PASSWORD("E103", "비밀번호는 필수입니다"),
-    INVALID_PASSWORD("E104", "비밀번호는 8-20자, 영문, 숫자, 특수문자를 포함해야 합니다.")
+    INVALID_PASSWORD("E104", "비밀번호는 8-20자, 영문, 숫자, 특수문자를 포함해야 합니다."),
+
+    // 인증 (E2xx)
+    INVALID_LOGIN("E200", "전화번호 또는 비밀번호가 일치하지 않습니다"),
+    INVALID_REFRESH_TOKEN("E201", "유효하지 않은 Refresh Token입니다"),
+    EXPIRED_REFRESH_TOKEN("E202", "만료된 Refresh Token입니다")
     ;
 
     private final String code;

@@ -13,7 +13,10 @@ public enum SuccessCode {
     // 회원
     SUCCESS_WITHDRAWAL("200", "탈퇴가 완료되었습니다."),
     SUCCESS_UPDATE_MEMBER_INFO("200", "회원 정보가 수정되었습니다."),
-    SUCCESS_CHANGE_PASSWORD("200", "비밀번호가 변경되었습니다.")
+    SUCCESS_CHANGE_PASSWORD("200", "비밀번호가 변경되었습니다."),
+
+    // 인증
+    SUCCESS_LOGOUT("200", "로그아웃 되었습니다.")
     ;
 
     private final String code;

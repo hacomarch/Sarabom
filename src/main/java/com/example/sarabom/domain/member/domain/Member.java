@@ -4,6 +4,7 @@ import com.example.sarabom.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+@Table(name = "tbl_member")
 @Entity
 @Getter
 @Builder
