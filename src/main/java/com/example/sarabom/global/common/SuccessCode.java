@@ -9,10 +9,11 @@ public enum SuccessCode {
 
     // 공통
     SUCCESS("200", "OK"),
+    SUCCESS_UPDATE("200", "수정되었습니다."),
+    SUCCESS_DELETE("200", "삭제되었습니다."),
 
     // 회원
     SUCCESS_WITHDRAWAL("200", "탈퇴가 완료되었습니다."),
-    SUCCESS_UPDATE_MEMBER_INFO("200", "회원 정보가 수정되었습니다."),
     SUCCESS_CHANGE_PASSWORD("200", "비밀번호가 변경되었습니다."),
 
     // 인증

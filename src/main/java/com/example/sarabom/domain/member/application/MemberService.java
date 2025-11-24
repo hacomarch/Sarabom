@@ -100,7 +100,7 @@ public class MemberService {
 
         member.update(request.getUsername(), request.getPhoneNumber(), request.getNickname(), request.getAddress());
 
-        return ApiResponse.success(SUCCESS_UPDATE_MEMBER_INFO);
+        return ApiResponse.success(SUCCESS_UPDATE);
     }
 
     /**
