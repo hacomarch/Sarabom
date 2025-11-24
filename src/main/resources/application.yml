@@ -3,13 +3,10 @@ server:
 
 spring:
   datasource:
-    url: jdbc:h2:file:./data/sarabom
-    username: sa
-    password:
-
-  h2:
-    console:
-      enabled: true
+    url: jdbc:oracle:thin:@sarabomdb_medium?TNS_ADMIN=${WALLET_PATH}
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: oracle.jdbc.OracleDriver
 
   jpa:
     hibernate:
@@ -18,10 +15,7 @@ spring:
     properties:
       hibernate:
         format_sql: true
-
-logging:
-  level:
-    com.hibernate.SQL: DEBUG
+        dialect: org.hibernate.dialect.OracleDialect
 
 jwt:
   secret: ${JWT_SECRET}
