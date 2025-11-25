@@ -16,7 +16,6 @@ public class MemberInfoResponse {
     private String username;
     private String phoneNumber;
     private String nickname;
-    private String address;
     private String status;
 
     public static MemberInfoResponse of(
@@ -24,7 +23,6 @@ public class MemberInfoResponse {
             String username,
             String phoneNumber,
             String nickname,
-            String address,
             MemberStatus status
     ) {
         return MemberInfoResponse.builder()
@@ -32,7 +30,6 @@ public class MemberInfoResponse {
                 .username(username)
                 .phoneNumber(phoneNumber)
                 .nickname(nickname)
-                .address(address)
                 .status(status.getText())
                 .build();
     }

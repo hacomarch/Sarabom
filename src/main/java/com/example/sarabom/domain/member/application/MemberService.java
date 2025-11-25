@@ -45,8 +45,7 @@ public class MemberService {
                 request.getUsername(),
                 request.getPhoneNumber(),
                 encodedPassword,
-                request.getNickname(),
-                request.getAddress()
+                request.getNickname()
         );
         memberRepository.save(newMember);
 
@@ -84,7 +83,6 @@ public class MemberService {
                 member.getUsername(),
                 member.getPhoneNumber(),
                 member.getNickname(),
-                member.getAddress(),
                 member.getStatus()
         );
 
@@ -98,7 +96,7 @@ public class MemberService {
     public ApiResponse<Void> updateMemberInfo(Long memberId, UpdateMemberInfoRequest request) {
         Member member = findById(memberId);
 
-        member.update(request.getUsername(), request.getPhoneNumber(), request.getNickname(), request.getAddress());
+        member.update(request.getUsername(), request.getPhoneNumber(), request.getNickname());
 
         return ApiResponse.success(SUCCESS_UPDATE);
     }

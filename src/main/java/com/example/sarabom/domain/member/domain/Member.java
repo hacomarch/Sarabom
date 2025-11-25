@@ -20,17 +20,15 @@ public class Member extends BaseEntity {
     @Embedded
     private Password password;
     private String nickname;
-    private String address;
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
-    public static Member of(String username, String phoneNumber, Password password, String nickname, String address) {
+    public static Member of(String username, String phoneNumber, Password password, String nickname) {
         return Member.builder()
                 .username(username)
                 .phoneNumber(phoneNumber)
                 .password(password)
                 .nickname(nickname)
-                .address(address)
                 .status(MemberStatus.ACTIVE)
                 .build();
     }
@@ -39,11 +37,10 @@ public class Member extends BaseEntity {
         this.status = MemberStatus.WITHDRAWN;
     }
 
-    public void update(String username, String phoneNumber, String nickname, String address) {
+    public void update(String username, String phoneNumber, String nickname) {
         this.username = username;
         this.phoneNumber = phoneNumber;
         this.nickname = nickname;
-        this.address = address;
     }
 
     public void updatePassword(Password newPassword) {
