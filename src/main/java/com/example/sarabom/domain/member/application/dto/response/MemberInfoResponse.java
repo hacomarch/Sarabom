@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 public class MemberInfoResponse {
     private Long memberId;
     private String username;
+    private String email;
     private String phoneNumber;
     private String nickname;
     private String status;
@@ -21,6 +22,7 @@ public class MemberInfoResponse {
     public static MemberInfoResponse of(
             Long memberId,
             String username,
+            String email,
             String phoneNumber,
             String nickname,
             MemberStatus status
@@ -28,6 +30,7 @@ public class MemberInfoResponse {
         return MemberInfoResponse.builder()
                 .memberId(memberId)
                 .username(username)
+                .email(email)
                 .phoneNumber(phoneNumber)
                 .nickname(nickname)
                 .status(status.getText())

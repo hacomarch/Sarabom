@@ -15,17 +15,26 @@ public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String username;
+
+    @Column(unique = true)
+    private String email;
+
     private String phoneNumber;
+
     @Embedded
     private Password password;
+
     private String nickname;
+
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
-    public static Member of(String username, String phoneNumber, Password password, String nickname) {
+    public static Member of(String username, String email, String phoneNumber, Password password, String nickname) {
         return Member.builder()
                 .username(username)
+                .email(email)
                 .phoneNumber(phoneNumber)
                 .password(password)
                 .nickname(nickname)

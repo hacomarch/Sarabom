@@ -8,7 +8,7 @@ import com.example.sarabom.domain.member.domain.Member;
 import com.example.sarabom.domain.member.domain.Password;
 import com.example.sarabom.domain.member.infrastructure.MemberRepository;
 import com.example.sarabom.global.common.ApiResponse;
-import com.example.sarabom.global.exception.member.DuplicatePhoneNumberException;
+import com.example.sarabom.global.exception.member.DuplicateEmailException;
 import com.example.sarabom.global.exception.member.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -31,9 +31,9 @@ public class MemberService {
      */
     @Transactional
     public ApiResponse<SignUpResponse> signUp(SignUpRequest request) {
-        // ACTIVE 상태인 회원 중 전화번호 중복 검증
-        if (memberRepository.existsByPhoneNumberAndStatus(request.getPhoneNumber(), ACTIVE)) {
-            throw new DuplicatePhoneNumberException();
+        // ACTIVE 상태인 회원 중 이메일 중복 검증
+        if (memberRepository.existsByEmailAndStatus(request.getEmail(), ACTIVE)) {
+            throw new DuplicateEmailException();
         }
 
         // 비밀번호 검증 및 인코딩 후 테이블에 저장
@@ -43,14 +43,15 @@ public class MemberService {
 
         Member newMember = Member.of(
                 request.getUsername(),
+                request.getEmail(),
                 request.getPhoneNumber(),
                 encodedPassword,
                 request.getNickname()
         );
         memberRepository.save(newMember);
 
-        // 저장된 회원의 전화번호로 다시 테이블에서 정보 조회
-        Member findMember = memberRepository.findByPhoneNumberAndStatus(newMember.getPhoneNumber(), ACTIVE)
+        // 저장된 회원의 이메일로 다시 테이블에서 정보 조회
+        Member findMember = memberRepository.findByEmailAndStatus(newMember.getEmail(), ACTIVE)
                 .orElseThrow(MemberNotFoundException::new);
 
         // 필요한 값들 리턴
@@ -81,6 +82,7 @@ public class MemberService {
         MemberInfoResponse data = MemberInfoResponse.of(
                 memberId,
                 member.getUsername(),
+                member.getEmail(),
                 member.getPhoneNumber(),
                 member.getNickname(),
                 member.getStatus()

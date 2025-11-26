@@ -12,7 +12,7 @@ public interface MemberRepository extends JpaRepository<Member, Long> {
 
     boolean existsByPhoneNumber(String phoneNumber);
 
-    boolean existsByPhoneNumberAndStatus(String phoneNumber, MemberStatus status);
+    boolean existsByEmailAndStatus(String email, MemberStatus status);
 
-    Optional<Member> findByPhoneNumberAndStatus(String phoneNumber, MemberStatus status);
+    Optional<Member> findByEmailAndStatus(String email, MemberStatus status);
 }

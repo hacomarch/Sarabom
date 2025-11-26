@@ -43,8 +43,8 @@ public class AuthService {
      */
     @Transactional
     public ApiResponse<LoginResponse> login(LoginRequest request) {
-        // 1. 전화번호로 회원 조회 (ACTIVE 상태만)
-        Member member = memberRepository.findByPhoneNumberAndStatus(request.getPhoneNumber(), ACTIVE)
+        // 1. 이메일로 회원 조회 (ACTIVE 상태만)
+        Member member = memberRepository.findByEmailAndStatus(request.getEmail(), ACTIVE)
                 .orElseThrow(MemberNotFoundException::new);
 
         // 2. 비밀번호 검증
