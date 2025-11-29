@@ -10,7 +10,6 @@ import com.example.sarabom.domain.property.domain.Property;
 import com.example.sarabom.domain.property.domain.PropertyStatus;
 import com.example.sarabom.domain.property.infrastructure.PropertyRepository;
 import com.example.sarabom.global.common.ApiResponse;
-import com.example.sarabom.global.exception.member.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,7 +33,7 @@ public class PropertyService {
     public ApiResponse<PropertyResponse> registerProperty(Long memberId, RegisterPropertyRequest request) {
         // Member 조회
         Member member = memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memberId));
 
         // 주소 VO 생성
         Address address = Address.of(
@@ -160,23 +159,7 @@ public class PropertyService {
      * Property → PropertyResponse 변환
      */
     private PropertyResponse toResponse(Property property) {
-        return PropertyResponse.of(
-                property.getId(),
-                property.getAddress().getFullAddress(),
-                property.getAddress().getSido(),
-                property.getAddress().getSigungu(),
-                property.getAddress().getDong(),
-                property.getAddress().getDetail(),
-                property.getAddress().getLatitude(),
-                property.getAddress().getLongitude(),
-                property.getBuildingType(),
-                property.getBuildingName(),
-                property.getFloorNumber(),
-                property.getRoomCount(),
-                property.getDescription(),
-                property.getStatus(),
-                property.getCreatedAt()
-        );
+        return PropertyResponse.from(property);
     }
 
     private Property findById(Long propertyId) {

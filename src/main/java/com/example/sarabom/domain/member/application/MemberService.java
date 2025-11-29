@@ -9,7 +9,6 @@ import com.example.sarabom.domain.member.domain.Password;
 import com.example.sarabom.domain.member.infrastructure.MemberRepository;
 import com.example.sarabom.global.common.ApiResponse;
 import com.example.sarabom.global.exception.member.DuplicateEmailException;
-import com.example.sarabom.global.exception.member.MemberNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -52,10 +51,10 @@ public class MemberService {
 
         // 저장된 회원의 이메일로 다시 테이블에서 정보 조회
         Member findMember = memberRepository.findByEmailAndStatus(newMember.getEmail(), ACTIVE)
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + newMember.getEmail()));
 
         // 필요한 값들 리턴
-        SignUpResponse data = SignUpResponse.of(findMember.getId(), findMember.getNickname());
+        SignUpResponse data = SignUpResponse.from(findMember);
         return ApiResponse.success(data);
     }
 
@@ -79,14 +78,7 @@ public class MemberService {
     public ApiResponse<MemberInfoResponse> getMemberInfo(Long memberId) {
         Member member = findById(memberId);
 
-        MemberInfoResponse data = MemberInfoResponse.of(
-                memberId,
-                member.getUsername(),
-                member.getEmail(),
-                member.getPhoneNumber(),
-                member.getNickname(),
-                member.getStatus()
-        );
+        MemberInfoResponse data = MemberInfoResponse.from(member);
 
         return ApiResponse.success(data);
     }
@@ -123,6 +115,6 @@ public class MemberService {
     // findById
     private Member findById(Long memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + memberId));
     }
 }

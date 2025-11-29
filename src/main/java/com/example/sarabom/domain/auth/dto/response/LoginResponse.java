@@ -1,5 +1,6 @@
 package com.example.sarabom.domain.auth.dto.response;
 
+import com.example.sarabom.domain.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -12,7 +13,7 @@ public class LoginResponse {
     private Long memberId;
     private String nickname;
 
-    public static LoginResponse of(String accessToken, String refreshToken, Long memberId, String nickname) {
-        return new LoginResponse(accessToken, refreshToken, memberId, nickname);
+    public static LoginResponse from(String accessToken, String refreshToken, Member member) {
+        return new LoginResponse(accessToken, refreshToken, member.getId(), member.getNickname());
     }
 }

@@ -19,21 +19,14 @@ public class MemberInfoResponse {
     private String nickname;
     private String status;
 
-    public static MemberInfoResponse of(
-            Long memberId,
-            String username,
-            String email,
-            String phoneNumber,
-            String nickname,
-            MemberStatus status
-    ) {
+    public static MemberInfoResponse from(Member member) {
         return MemberInfoResponse.builder()
-                .memberId(memberId)
-                .username(username)
-                .email(email)
-                .phoneNumber(phoneNumber)
-                .nickname(nickname)
-                .status(status.getText())
+                .memberId(member.getId())
+                .username(member.getUsername())
+                .email(member.getEmail())
+                .phoneNumber(member.getPhoneNumber())
+                .nickname(member.getNickname())
+                .status(member.getStatus().getText())
                 .build();
     }
 }

@@ -1,5 +1,6 @@
 package com.example.sarabom.domain.member.application.dto.response;
 
+import com.example.sarabom.domain.member.domain.Member;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,16 +14,10 @@ public class SignUpResponse {
     private Long memberId;
     private String nickname;
 
-    /**
-     * dto 생성
-     * @param memberId - 회원 id
-     * @param nickname - 회원 닉네임
-     * @return SignUpResponse
-     */
-    public static SignUpResponse of(Long memberId, String nickname) {
+    public static SignUpResponse from(Member member) {
         return SignUpResponse.builder()
-                .memberId(memberId)
-                .nickname(nickname)
+                .memberId(member.getId())
+                .nickname(member.getNickname())
                 .build();
     }
 }

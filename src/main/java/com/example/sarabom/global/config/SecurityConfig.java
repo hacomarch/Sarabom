@@ -37,6 +37,7 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/auth/login").permitAll()  // 로그인 허용
                 .requestMatchers("/api/v1/auth/refresh").permitAll()  // refresh token 재발급 허용
                 .requestMatchers("/api/v1/member/signup").permitAll()  // 회원가입 허용
+                .requestMatchers("/ws-chat/**").permitAll()  // WebSocket 허용
                 .anyRequest().authenticated()  // 나머지는 인증 필요
             )
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);  // JWT 필터 추가

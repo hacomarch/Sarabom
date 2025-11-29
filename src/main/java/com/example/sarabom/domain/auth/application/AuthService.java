@@ -12,7 +12,6 @@ import com.example.sarabom.global.common.ApiResponse;
 import com.example.sarabom.global.exception.auth.ExpiredRefreshTokenException;
 import com.example.sarabom.global.exception.auth.InvalidLoginException;
 import com.example.sarabom.global.exception.auth.InvalidRefreshTokenException;
-import com.example.sarabom.global.exception.member.MemberNotFoundException;
 import com.example.sarabom.global.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -45,7 +44,7 @@ public class AuthService {
     public ApiResponse<LoginResponse> login(LoginRequest request) {
         // 1. 이메일로 회원 조회 (ACTIVE 상태만)
         Member member = memberRepository.findByEmailAndStatus(request.getEmail(), ACTIVE)
-                .orElseThrow(MemberNotFoundException::new);
+                .orElseThrow(() -> new IllegalArgumentException("Member not found: " + request.getEmail()));
 
         // 2. 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), member.getPassword().getValue())) {
@@ -65,7 +64,7 @@ public class AuthService {
                 );
 
         // 5. 응답 반환
-        LoginResponse data = LoginResponse.of(accessToken, refreshTokenValue, member.getId(), member.getNickname());
+        LoginResponse data = LoginResponse.from(accessToken, refreshTokenValue, member);
         return ApiResponse.success(data);
     }
 
@@ -98,7 +97,7 @@ public class AuthService {
         refreshToken.updateToken(newRefreshToken, expiresAt);
 
         // 6. 응답 반환
-        RefreshTokenResponse data = RefreshTokenResponse.of(newAccessToken, newRefreshToken);
+        RefreshTokenResponse data = RefreshTokenResponse.from(newAccessToken, newRefreshToken);
         return ApiResponse.success(data);
     }
 

@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Chat Test - Sarabom</title>
+    <script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/stompjs@2.3.3/lib/stomp.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .section {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        input[type="text"], input[type="number"] {
+            padding: 8px;
+            margin: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        button {
+            padding: 8px 15px;
+            margin: 5px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        button.disconnect {
+            background-color: #f44336;
+        }
+        button.disconnect:hover {
+            background-color: #da190b;
+        }
+        #messages {
+            border: 1px solid #ccc;
+            padding: 10px;
+            height: 400px;
+            overflow-y: scroll;
+            background-color: #f9f9f9;
+            border-radius: 3px;
+        }
+        #messages p {
+            margin: 5px 0;
+            padding: 5px;
+            background-color: white;
+            border-radius: 3px;
+        }
+        .status {
+            font-weight: bold;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        .connected {
+            background-color: #d4edda;
+            color: #155724;
+        }
+        .disconnected {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+        .info {
+            background-color: #d1ecf1;
+            color: #0c5460;
+        }
+    </style>
+</head>
+<body>
+    <h1>🏠 Sarabom Chat Test</h1>
+
+    <div class="section">
+        <h3>1. Connection</h3>
+        <div>
+            <input type="text" id="token" placeholder="JWT Access Token (로그인 후 받은 토큰)" style="width: 500px">
+        </div>
+        <div>
+            <button onclick="connect()">Connect</button>
+            <button class="disconnect" onclick="disconnect()">Disconnect</button>
+        </div>
+        <div id="connectionStatus" class="status disconnected">Status: Disconnected</div>
+    </div>
+
+    <div class="section">
+        <h3>2. Subscribe to Chat Room</h3>
+        <div>
+            Room ID: <input type="number" id="roomId" value="1" min="1">
+            <button onclick="subscribe()">Subscribe</button>
+        </div>
+        <div id="subscriptionStatus" class="status info">Not subscribed</div>
+    </div>
+
+    <div class="section">
+        <h3>3. Send Message</h3>
+        <div>
+            Room ID: <input type="number" id="sendRoomId" value="1" min="1">
+        </div>
+        <div>
+            Message: <input type="text" id="message" placeholder="Type your message here..." style="width: 500px">
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
+    <div class="section">
+        <h3>4. Messages</h3>
+        <button onclick="clearMessages()">Clear Messages</button>
+        <div id="messages"></div>
+    </div>
+
+    <script>
+        let stompClient = null;
+        let currentSubscription = null;
+
+        function connect() {
+            const token = document.getElementById('token').value;
+
+            if (!token) {
+                alert('Please enter JWT token!');
+                return;
+            }
+
+            const socket = new SockJS('http://localhost:8080/ws-chat');
+            stompClient = Stomp.over(socket);
+
+            // Enable debug for development
+            stompClient.debug = function(str) {
+                console.log('STOMP: ' + str);
+            };
+
+            stompClient.connect(
+                {'Authorization': 'Bearer ' + token},
+                function(frame) {
+                    console.log('Connected: ' + frame);
+                    updateConnectionStatus(true);
+                    addMessage('✅ Connected to server', 'connected');
+                },
+                function(error) {
+                    console.log('Connection error: ', error);
+                    updateConnectionStatus(false);
+                    addMessage('❌ Connection error: ' + error, 'disconnected');
+                }
+            );
+        }
+
+        function disconnect() {
+            if (stompClient !== null) {
+                stompClient.disconnect(function() {
+                    updateConnectionStatus(false);
+                    updateSubscriptionStatus(false);
+                    addMessage('🔌 Disconnected from server', 'info');
+                });
+            }
+        }
+
+        function subscribe() {
+            if (stompClient === null || !stompClient.connected) {
+                alert('Please connect first!');
+                return;
+            }
+
+            // Unsubscribe from previous room if any
+            if (currentSubscription !== null) {
+                currentSubscription.unsubscribe();
+            }
+
+            const roomId = document.getElementById('roomId').value;
+
+            currentSubscription = stompClient.subscribe('/topic/chat/' + roomId, function(message) {
+                const msg = JSON.parse(message.body);
+                const time = new Date(msg.createdAt).toLocaleTimeString();
+                addMessage(`📩 [${time}] ${msg.senderNickname}: ${msg.content}`, 'message');
+            });
+
+            updateSubscriptionStatus(true, roomId);
+            addMessage(`🔔 Subscribed to room ${roomId}`, 'info');
+        }
+
+        function sendMessage() {
+            if (stompClient === null || !stompClient.connected) {
+                alert('Please connect first!');
+                return;
+            }
+
+            const roomId = document.getElementById('sendRoomId').value;
+            const content = document.getElementById('message').value;
+
+            if (!content.trim()) {
+                alert('Please enter a message!');
+                return;
+            }
+
+            stompClient.send("/app/chat/send", {}, JSON.stringify({
+                'roomId': parseInt(roomId),
+                'content': content
+            }));
+
+            addMessage(`📤 Sent to room ${roomId}: ${content}`, 'info');
+            document.getElementById('message').value = '';
+        }
+
+        function updateConnectionStatus(isConnected) {
+            const statusDiv = document.getElementById('connectionStatus');
+            if (isConnected) {
+                statusDiv.textContent = 'Status: Connected ✅';
+                statusDiv.className = 'status connected';
+            } else {
+                statusDiv.textContent = 'Status: Disconnected ❌';
+                statusDiv.className = 'status disconnected';
+            }
+        }
+
+        function updateSubscriptionStatus(isSubscribed, roomId = null) {
+            const statusDiv = document.getElementById('subscriptionStatus');
+            if (isSubscribed) {
+                statusDiv.textContent = `Subscribed to room ${roomId} 🔔`;
+                statusDiv.className = 'status connected';
+            } else {
+                statusDiv.textContent = 'Not subscribed';
+                statusDiv.className = 'status info';
+            }
+        }
+
+        function addMessage(message, type = '') {
+            const messagesDiv = document.getElementById('messages');
+            const p = document.createElement('p');
+            p.textContent = `[${new Date().toLocaleTimeString()}] ${message}`;
+            if (type) {
+                p.className = type;
+            }
+            messagesDiv.appendChild(p);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+
+        function clearMessages() {
+            document.getElementById('messages').innerHTML = '';
+        }
+
+        // Handle Enter key in message input
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('message').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    sendMessage();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
